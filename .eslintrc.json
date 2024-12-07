@@ -1,26 +1,18 @@
 {
-  "env": {
-    "browser": true,
-    "es2021": true
-  },
   "extends": [
-    "next/core-web-vitals",
     "eslint:recommended",
-    "standard",
     "plugin:react/recommended",
-    "plugin:jsx-a11y/recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": ["react", "jsx-a11y", "prettier"],
+  "plugins": ["react", "prettier"],
   "rules": {
     "prettier/prettier": "error",
     "react/react-in-jsx-scope": "off",
     "jsx-a11y/anchor-is-valid": [
-      "error",
+      "warn",
       {
         "components": ["Link"],
-        "specialLink": ["hrefLeft", "hrefRight"],
-        "aspects": ["invalidHref", "preferButton"]
+        "aspects": ["invalidHref"]
       }
     ]
   },

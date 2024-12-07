@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   description:
     'Track your habits effortlessly with LokHabitize. Gamify your routines and stay productive every day.',
   icons: {
-    icon: ''
+    icon: '/images/lokhabitize.svg'
   }
 }
 
