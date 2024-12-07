@@ -1,7 +1,10 @@
+import Navbar from '@/components/navigation/navbar'
 import React from 'react'
-const Layout = ({ children }: { children: React.ReactNode }) => {
+
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main>
+      <Navbar />
       <div>
         <section>
           <div>{children}</div>
@@ -11,4 +14,4 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export default Layout
+export default RootLayout

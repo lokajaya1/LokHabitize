@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import type { Metadata } from 'next'
 import { Fira_Code, Inter, Poppins } from 'next/font/google'
-import React from 'react'
+import React, { ReactNode } from 'react'
 import './globals.css'
 
 const inter = Inter({
@@ -32,11 +32,7 @@ export const metadata: Metadata = {
   }
 }
 
-export default function RootLayout({
-  children
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+const RootLayout = async ({ children }: { children: ReactNode }) => {
   return (
     <html
       lang="en"
@@ -48,3 +44,5 @@ export default function RootLayout({
     </html>
   )
 }
+
+export default RootLayout
