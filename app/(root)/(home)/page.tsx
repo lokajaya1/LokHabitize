@@ -29,7 +29,7 @@ const HomePage = () => {
             <div className="flex gap-4 justify-end mt-6">
               <Button className="flex items-center bg-main-black text-white px-6 py-3 rounded-xl">
                 <Image
-                  src="/icons/info.svg"
+                  src="/icons/Info.svg"
                   alt="info icon"
                   width={20}
                   height={20}
