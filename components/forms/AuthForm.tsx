@@ -1,87 +1,74 @@
 'use client'
 
-import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { SignInSchema, SignUpSchema } from '@/lib/validations'
+import { useState } from 'react'
 import {
-  signInWithCredentials,
-  signUpWithCredentials
+  signUpWithCredentials,
+  signInWithCredentials
 } from '@/lib/actions/auth.action'
+import { SignInSchema, SignUpSchema } from '@/lib/validations'
+
+type FormData = {
+  email: string
+  password: string
+}
 
 interface AuthFormProps {
   type: 'sign-in' | 'sign-up'
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
+  const [error, setError] = useState<string | null>(null)
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm({
+  } = useForm<FormData>({
     resolver: zodResolver(type === 'sign-in' ? SignInSchema : SignUpSchema)
   })
 
-  const [loading, setLoading] = useState(false)
-
-  const onSubmit = async (data: any) => {
-    setLoading(true)
+  const onSubmit = async (data: FormData) => {
     try {
-      if (type === 'sign-in') {
-        await signInWithCredentials(data)
-        alert('Sign in successful!')
-      } else {
-        await signUpWithCredentials(data)
+      if (type === 'sign-up') {
+        await signUpWithCredentials(data.email, data.password)
         alert('Sign up successful!')
+      } else {
+        await signInWithCredentials(data.email, data.password)
+        alert('Sign in successful!')
       }
-    } catch (error) {
-      alert(error.message || 'Something went wrong!')
-    } finally {
-      setLoading(false)
+    } catch (err: any) {
+      setError(err.message)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-80">
-      <input
-        {...register('email')}
-        type="email"
-        placeholder="Email"
-        className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-500"
-      />
-      {errors.email && (
-        <p className="text-red-500 text-sm">{errors.email.message}</p>
-      )}
-
-      <input
-        {...register('password')}
-        type="password"
-        placeholder="Password"
-        className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-500"
-      />
-      {errors.password && (
-        <p className="text-red-500 text-sm">{errors.password.message}</p>
-      )}
-
-      {type === 'sign-up' && (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {error && <p className="text-red-500">{error}</p>}
+      <div>
+        <label htmlFor="email">Email</label>
         <input
-          {...register('confirmPassword')}
-          type="password"
-          placeholder="Confirm Password"
-          className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-500"
+          id="email"
+          type="email"
+          className="input"
+          {...register('email')}
         />
-      )}
-
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-300"
-        disabled={loading}
-      >
-        {loading
-          ? `${type === 'sign-in' ? 'Signing In' : 'Signing Up'}...`
-          : type === 'sign-in'
-            ? 'Sign In'
-            : 'Sign Up'}
+        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+      </div>
+      <div>
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          className="input"
+          {...register('password')}
+        />
+        {errors.password && (
+          <p className="text-red-500">{errors.password.message}</p>
+        )}
+      </div>
+      <button type="submit" className="btn-primary">
+        {type === 'sign-in' ? 'Sign In' : 'Sign Up'}
       </button>
     </form>
   )

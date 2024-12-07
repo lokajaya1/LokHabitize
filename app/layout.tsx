@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   description:
     'Track your habits effortlessly with LokHabitize. Gamify your routines and stay productive every day.',
   icons: {
-    icon: '/images/lokhabitize.svg'
+    icon: '/icons/lokhabitize.svg'
   }
 }
 
@@ -38,7 +38,7 @@ const RootLayout = async ({ children }: { children: ReactNode }) => {
       lang="en"
       className={`${inter.variable} ${poppins.variable} ${firaCode.variable}`}
     >
-      <body className="bg-background font-sans antialiased text-gray-800">
+      <body className="bg-background font-sans antialiased text-gray-900">
         {children}
       </body>
     </html>

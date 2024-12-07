@@ -1,60 +1,49 @@
+import React from 'react'
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+
 const HomePage = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      {/* Hero Section */}
-      <header className="w-full bg-blue-500 text-white py-12 px-4 text-center">
-        <h1 className="text-5xl font-bold">Welcome to LokHabitize</h1>
-        <p className="mt-4 text-lg">
-          Transform your daily habits with ease and efficiency.
-        </p>
-        <button className="mt-6 px-6 py-3 bg-white text-blue-500 font-semibold rounded-lg shadow-md hover:bg-gray-200">
-          Get Started
-        </button>
-      </header>
+    <>
+      <main className="flex w-full items-center justify-center p-4 sm:flex-row sm:items-center bg-white">
+        <div className="bg-background rounded-3xl shadow-lg px-12 md:px-16 flex flex-col md:flex-row items-center space-y-8 md:space-y-0 md:space-x-12 w-full max-w-6xl">
+          {/* Gambar Mockup */}
+          <Image
+            src="/images/iphone-15-pro-mockup.svg"
+            alt="Smartphone with blank screen"
+            width={400}
+            height={800}
+            className="w-72 h-auto md:w-96"
+            priority
+          />
 
-      {/* Features Section */}
-      <section className="py-16 px-6 w-full max-w-7xl text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8">
-          Why Choose LokHabitize?
-        </h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-bold mb-4">Track Your Habits</h3>
-            <p className="text-gray-600">
-              Monitor your daily activities and build better habits with our
-              intuitive tracking system.
+          {/* Konten Teks */}
+          <div className="flex flex-col items-end text-right space-y-4">
+            <p className="text-gray-500 text-lg md:text-xl max-w-md">
+              a daily habit tracker that helps you do more, by doing less.
             </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-bold mb-4">Set Clear Goals</h3>
-            <p className="text-gray-600">
-              Define achievable goals and stay motivated with personalized
-              reminders.
-            </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h3 className="text-xl font-bold mb-4">Analyze Your Progress</h3>
-            <p className="text-gray-600">
-              Get insights into your progress with detailed analytics and
-              reports.
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
+              THE SIMPLEST HABIT TRACKER
+            </h1>
+
+            {/* Tombol */}
+            <div className="flex gap-4 justify-end mt-6">
+              <Button className="flex items-center bg-main-black text-white px-6 py-3 rounded-xl">
+                <Image
+                  src="/icons/info.svg"
+                  alt="info icon"
+                  width={20}
+                  height={20}
+                />
+              </Button>
+              <Button className="flex items-center bg-primary text-white px-6 py-3 rounded-xl">
+                Track Your Habit
+              </Button>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* Call-to-Action Section */}
-      <footer className="w-full bg-blue-500 text-white py-12 px-4 text-center">
-        <h2 className="text-2xl font-bold mb-4">
-          Ready to start your journey?
-        </h2>
-        <p className="text-lg">
-          Sign up now and begin transforming your habits today.
-        </p>
-        <button className="mt-6 px-6 py-3 bg-white text-blue-500 font-semibold rounded-lg shadow-md hover:bg-gray-200">
-          Sign Up
-        </button>
-      </footer>
-    </div>
+      </main>
+    </>
   )
 }
 

@@ -1,6 +1,7 @@
 import { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: ['class'],
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
@@ -10,18 +11,22 @@ const config: Config = {
     extend: {
       colors: {
         primary: '#4F46E5',
-        'primary-dark': '#3730a3',
+        'primary-dark': '#3730A3',
         secondary: '#22C55E',
         'secondary-dark': '#15803D',
-        accent: '#E11D48',
-        background: '#F3F4F6',
+        'main-black': '#1E1E1E',
+        background: '#F5F5F5',
         surface: '#FFFFFF',
         muted: '#9CA3AF',
         warning: '#FBBF24',
         success: '#10B981',
         error: '#EF4444',
         info: '#3B82F6',
-        'primary-gradient': 'linear-gradient(90deg, #4F46E5, #22C55E)'
+        'primary-gradient': 'linear-gradient(90deg, #4F46E5, #22C55E)',
+        foreground: '#1F2937',
+        border: '#E5E7EB',
+        input: '#E5E7EB',
+        ring: '#CBD5E1'
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
@@ -40,7 +45,10 @@ const config: Config = {
       },
       borderRadius: {
         '4xl': '2rem',
-        '5xl': '2.5rem'
+        '5xl': '2.5rem',
+        lg: '1rem',
+        md: '0.75rem',
+        sm: '0.5rem'
       },
       boxShadow: {
         card: '0 2px 6px rgba(0, 0, 0, 0.1)',
@@ -55,6 +63,11 @@ const config: Config = {
         slideUp: {
           '0%': { transform: 'translateY(100%)' },
           '100%': { transform: 'translateY(0)' }
+        },
+        bounce: {
+          '0%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+          '100%': { transform: 'translateY(0)' }
         }
       },
       animation: {
@@ -64,7 +77,7 @@ const config: Config = {
       }
     }
   },
-  plugins: []
+  plugins: [require('tailwindcss-animate')]
 }
 
 export default config

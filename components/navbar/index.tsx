@@ -3,21 +3,21 @@ import Link from 'next/link'
 import React from 'react'
 import NavLinks from './NavLinks'
 import MobileNav from './MobileNav'
-import AuthButtons from '../AuthButtons'
 
 const Navbar = () => {
   return (
-    <header className="bg-background shadow-md">
-      <nav className="container mx-auto flex items-center justify-between p-4">
-        {/* Logo */}
+    <header className="bg-white shadow-md p-4">
+      <nav className="container mx-auto flex items-center justify-between">
+        <NavLinks />
+
         <Link
           href="/"
           aria-label="LokHabitize Home"
           className="flex items-center gap-1"
         >
           <Image
-            src="/images/lokhabitize.svg"
-            width={80}
+            src="/icons/lokhabitize.svg"
+            width={60}
             height={40}
             alt="LokHabitize Logo"
             priority
@@ -27,13 +27,6 @@ const Navbar = () => {
           </p>
         </Link>
 
-        {/* Navigation Links */}
-        <NavLinks />
-
-        {/* Auth Buttons */}
-        <AuthButtons />
-
-        {/* Mobile Navigation */}
         <MobileNav />
       </nav>
     </header>

@@ -1,39 +1,38 @@
-import { MongoClient } from 'mongodb'
+import User from '@/database/user.model'
+import { hash, compare } from 'bcryptjs'
 
-const client = new MongoClient('your-mongodb-connection-string')
-const db = client.db('LokHabitizeDB')
-const usersCollection = db.collection('users')
-
-export const signUpWithCredentials = async (data: {
-  email: string
+export const signUpWithCredentials = async (
+  email: string,
   password: string
-}) => {
-  try {
-    await client.connect()
-    const user = await usersCollection.insertOne(data)
-    return user
-  } catch (error) {
-    throw new Error('Sign up failed: ' + error.message)
-  } finally {
-    await client.close()
+) => {
+  const existingUser = await User.findOne({ email })
+  if (existingUser) {
+    throw new Error('User already exists')
   }
+
+  const hashedPassword = await hash(password, 10)
+  const newUser = new User({
+    email,
+    password: hashedPassword
+  })
+
+  await newUser.save()
+  return newUser
 }
 
-export const signInWithCredentials = async (data: {
-  email: string
+export const signInWithCredentials = async (
+  email: string,
   password: string
-}) => {
-  try {
-    await client.connect()
-    const user = await usersCollection.findOne({ email: data.email })
-    if (user && user.password === data.password) {
-      return user
-    } else {
-      throw new Error('Invalid credentials')
-    }
-  } catch (error) {
-    throw new Error('Sign in failed: ' + error.message)
-  } finally {
-    await client.close()
+) => {
+  const user = await User.findOne({ email })
+  if (!user) {
+    throw new Error('Invalid email or password')
   }
+
+  const isPasswordValid = await compare(password, user.password)
+  if (!isPasswordValid) {
+    throw new Error('Invalid email or password')
+  }
+
+  return user
 }
