@@ -1,35 +1,50 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
+/* eslint-disable camelcase */
+import type { Metadata } from 'next'
+import { Fira_Code, Inter, Poppins } from 'next/font/google'
+import React from 'react'
+import './globals.css'
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap'
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  variable: '--font-poppins',
+  display: 'swap',
+  weight: ['400', '500', '700']
+})
+
+const firaCode = Fira_Code({
+  subsets: ['latin'],
+  variable: '--font-fira-code',
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
-  title: "LokHabitize",
-  description: "Digital Habit tracker",
-};
+  title: 'LokHabitize',
+  description:
+    'Track your habits effortlessly with LokHabitize. Gamify your routines and stay productive every day.',
+  icons: {
+    icon: ''
+  }
+}
 
 export default function RootLayout({
-  children,
+  children
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${inter.variable} ${poppins.variable} ${firaCode.variable}`}
+    >
+      <body className="bg-background font-sans antialiased text-gray-800">
         {children}
       </body>
     </html>
-  );
+  )
 }
