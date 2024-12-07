@@ -2,17 +2,10 @@ import React from 'react'
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main>
-      <section>
-        <div>
-          <div>
-            <h1>Join LokHabitize</h1>
-            <p></p>
-          </div>
-        </div>
-        {children}
-      </section>
-    </main>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      {/* Content for sign-in or sign-up */}
+      {children}
+    </div>
   )
 }
 

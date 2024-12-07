@@ -9,21 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#4F46E5', // Warna utama
-        secondary: '#22C55E', // Warna sekunder
-        accent: '#E11D48', // Warna aksen
-        background: '#F3F4F6', // Warna latar belakang global
-        surface: '#FFFFFF', // Warna permukaan komponen
-        muted: '#9CA3AF', // Warna teks redup
-        warning: '#FBBF24', // Warna peringatan
-        success: '#10B981', // Warna sukses
-        error: '#EF4444', // Warna kesalahan
-        info: '#3B82F6' // Warna informasi
+        primary: '#4F46E5',
+        'primary-dark': '#3730a3',
+        secondary: '#22C55E',
+        'secondary-dark': '#15803D',
+        accent: '#E11D48',
+        background: '#F3F4F6',
+        surface: '#FFFFFF',
+        muted: '#9CA3AF',
+        warning: '#FBBF24',
+        success: '#10B981',
+        error: '#EF4444',
+        info: '#3B82F6',
+        'primary-gradient': 'linear-gradient(90deg, #4F46E5, #22C55E)'
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'], // Font utama
-        heading: ['Poppins', 'sans-serif'], // Font untuk heading
-        mono: ['Fira Code', 'monospace'] // Font monospace
+        sans: ['Inter', 'sans-serif'],
+        heading: ['Poppins', 'sans-serif'],
+        mono: ['Fira Code', 'monospace']
       },
       spacing: {
         18: '4.5rem',
@@ -31,14 +34,18 @@ const config: Config = {
         36: '9rem',
         72: '18rem',
         84: '21rem',
-        96: '24rem'
+        96: '24rem',
+        108: '27rem',
+        120: '30rem'
       },
       borderRadius: {
-        '4xl': '2rem'
+        '4xl': '2rem',
+        '5xl': '2.5rem'
       },
       boxShadow: {
         card: '0 2px 6px rgba(0, 0, 0, 0.1)',
-        floating: '0 8px 20px rgba(0, 0, 0, 0.15)'
+        floating: '0 8px 20px rgba(0, 0, 0, 0.15)',
+        intense: '0 12px 24px rgba(0, 0, 0, 0.2)'
       },
       keyframes: {
         fadeIn: {
@@ -52,7 +59,8 @@ const config: Config = {
       },
       animation: {
         fadeIn: 'fadeIn 0.5s ease-out',
-        slideUp: 'slideUp 0.5s ease-in-out'
+        slideUp: 'slideUp 0.5s ease-in-out',
+        bounce: 'bounce 1s infinite'
       }
     }
   },
