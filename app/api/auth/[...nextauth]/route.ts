@@ -2,7 +2,7 @@ import NextAuth, { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { compare } from 'bcryptjs'
 import connectToDatabase from '@/lib/mongoose'
-import User from '@/database/user.model'
+import User, { IUser } from '@/database/user.model'
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -17,34 +17,38 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required')
+        }
+
         await connectToDatabase()
 
-        const { email, password } = credentials || {}
-
-        // Cari user berdasarkan email
-        const user = await User.findOne({ email })
+        const user = (await User.findOne({
+          email: credentials.email
+        })) as IUser | null
         if (!user) {
           throw new Error('No user found with the email')
         }
 
-        // Bandingkan password
-        const isPasswordValid = await compare(password, user.password)
+        const isPasswordValid = await compare(
+          credentials.password,
+          user.password
+        )
         if (!isPasswordValid) {
           throw new Error('Invalid credentials')
         }
 
-        // Return data user (hanya id dan email)
         return {
-          id: user._id.toString(),
+          id: user.id.toString(),
           email: user.email
         }
       }
     })
   ],
   session: {
-    strategy: 'jwt' // Menggunakan JSON Web Token
+    strategy: 'jwt'
   },
-  secret: process.env.NEXTAUTH_SECRET, // Pastikan ini diatur di .env
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -56,8 +60,8 @@ export const authOptions: AuthOptions = {
     async session({ session, token }) {
       if (token) {
         session.user = {
-          id: token.id,
-          email: token.email
+          ...session.user,
+          id: token.id as string
         }
       }
       return session
