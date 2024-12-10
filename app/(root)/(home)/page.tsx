@@ -1,4 +1,4 @@
-import Content from '@/components/Content'
+import Feature from '@/components/Feature'
 import Grid from '@/components/Grid'
 import Hero from '@/components/Hero'
 import ShowcaseHabit from '@/components/ShowcaseHabit'
@@ -10,7 +10,7 @@ const HomePage = () => {
         <div>
           <Hero />
           <ShowcaseHabit />
-          <Content />
+          <Feature />
           <Grid />
         </div>
       </main>
