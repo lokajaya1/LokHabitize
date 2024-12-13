@@ -1,12 +1,19 @@
-import AuthForm from '@/components/forms/AuthForm'
+'use client'
 
-const SignUpPage = () => {
+import React from 'react'
+
+import AuthForm from '@/components/forms/AuthForm'
+import { SignUpSchema } from '@/lib/validations'
+
+const SignUp = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-semibold mb-6">Sign Up for LokHabitize</h1>
-      <AuthForm type="sign-up" />
-    </div>
+    <AuthForm
+      formType="SIGN_UP"
+      schema={SignUpSchema}
+      defaultValues={{ email: '', password: '', name: '', username: '' }}
+      onSubmit={(data) => Promise.resolve({ success: true, data })}
+    />
   )
 }
 
-export default SignUpPage
+export default SignUp

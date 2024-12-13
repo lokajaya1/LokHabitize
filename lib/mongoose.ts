@@ -1,44 +1,42 @@
 import mongoose from 'mongoose'
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('The MONGODB_URI environment variable is not defined in .env')
+// URL koneksi ke MongoDB
+const MONGODB_URI = process.env.MONGODB_URI || 'your_mongodb_connection_string'
+
+if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable')
 }
 
-const MONGODB_URI = process.env.MONGODB_URI
+// Gunakan cache global untuk mencegah koneksi ulang di lingkungan pengembangan
+interface MongooseCache {
+  conn: typeof mongoose | null
+  promise: Promise<typeof mongoose> | null
+}
 
-// Gunakan cache untuk koneksi Mongoose
-let cached = global.mongooseConnection
+declare global {
+  // Tambahkan tipe untuk cache agar TypeScript tidak menghasilkan error
+  var mongoose: MongooseCache
+}
+
+let cached = global.mongoose
 
 if (!cached) {
-  cached = global.mongooseConnection = { conn: null, promise: null }
+  cached = global.mongoose = { conn: null, promise: null }
 }
 
-async function connectToDatabase() {
+async function dbConnect(): Promise<typeof mongoose> {
   if (cached.conn) {
     return cached.conn
   }
 
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(MONGODB_URI) // Tidak perlu opsi tambahan
-      .then((mongoose) => {
-        console.log('Connected to MongoDB')
-        return mongoose
-      })
-      .catch((err) => {
-        console.error('Failed to connect to MongoDB:', err)
-        throw err
-      })
+      .connect(MONGODB_URI)
+      .then((mongooseInstance) => mongooseInstance)
   }
 
-  try {
-    cached.conn = await cached.promise
-  } catch (err) {
-    cached.promise = null // Reset jika koneksi gagal
-    throw err
-  }
-
+  cached.conn = await cached.promise
   return cached.conn
 }
 
-export default connectToDatabase
+export default dbConnect

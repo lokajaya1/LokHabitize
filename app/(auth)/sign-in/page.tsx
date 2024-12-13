@@ -1,12 +1,19 @@
-import AuthForm from '@/components/forms/AuthForm'
+'use client'
 
-const SignInPage = () => {
+import React from 'react'
+
+import AuthForm from '@/components/forms/AuthForm'
+import { SignInSchema } from '@/lib/validations'
+
+const SignIn = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-2xl font-semibold mb-6">Sign In to LokHabitize</h1>
-      <AuthForm type="sign-in" />
-    </div>
+    <AuthForm
+      formType="SIGN_IN"
+      schema={SignInSchema}
+      defaultValues={{ email: '', password: '' }}
+      onSubmit={(data) => Promise.resolve({ success: true, data })}
+    />
   )
 }
 
-export default SignInPage
+export default SignIn

@@ -1,76 +1,118 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import Link from 'next/link'
 import {
-  signUpWithCredentials,
-  signInWithCredentials
-} from '@/lib/actions/auth.action'
-import { SignInSchema, SignUpSchema } from '@/lib/validations'
+  DefaultValues,
+  FieldValues,
+  Path,
+  SubmitHandler,
+  useForm
+} from 'react-hook-form'
+import { z, ZodType } from 'zod'
 
-type FormData = {
-  email: string
-  password: string
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import ROUTES from '@/constants/routes'
+
+interface AuthFormProps<T extends FieldValues> {
+  schema: ZodType<T>
+  defaultValues: T
+  onSubmit: (data: T) => Promise<{ success: boolean }>
+  formType: 'SIGN_IN' | 'SIGN_UP'
 }
 
-interface AuthFormProps {
-  type: 'sign-in' | 'sign-up'
-}
-
-const AuthForm: React.FC<AuthFormProps> = ({ type }) => {
-  const [error, setError] = useState<string | null>(null)
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<FormData>({
-    resolver: zodResolver(type === 'sign-in' ? SignInSchema : SignUpSchema)
+const AuthForm = <T extends FieldValues>({
+  schema,
+  defaultValues,
+  formType,
+  onSubmit
+}: AuthFormProps<T>) => {
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: defaultValues as DefaultValues<T>
   })
 
-  const onSubmit = async (data: FormData) => {
-    try {
-      if (type === 'sign-up') {
-        await signUpWithCredentials(data.email, data.password)
-        alert('Sign up successful!')
-      } else {
-        await signInWithCredentials(data.email, data.password)
-        alert('Sign in successful!')
-      }
-    } catch (err: any) {
-      setError(err.message)
-    }
+  const handleSubmit: SubmitHandler<T> = async () => {
+    // TODO: Authenticate User
   }
 
+  const buttonText = formType === 'SIGN_IN' ? 'Sign In' : 'Sign Up'
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && <p className="text-red-500">{error}</p>}
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          className="input"
-          {...register('email')}
-        />
-        {errors.email && <p className="text-red-500">{errors.email.message}</p>}
-      </div>
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          className="input"
-          {...register('password')}
-        />
-        {errors.password && (
-          <p className="text-red-500">{errors.password.message}</p>
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="mt-10 space-y-6"
+      >
+        {Object.keys(defaultValues).map((field) => (
+          <FormField
+            key={field}
+            control={form.control}
+            name={field as Path<T>}
+            render={({ field }) => (
+              <FormItem className="flex w-full flex-col gap-2.5">
+                <FormLabel className="paragraph-medium text-primary">
+                  {field.name === 'email'
+                    ? 'Email Address'
+                    : field.name.charAt(0).toUpperCase() + field.name.slice(1)}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    required
+                    type={field.name === 'password' ? 'password' : 'text'}
+                    {...field}
+                    className="paragraph-regular background-light900_dark300 light-border-2 text-dark300_light700 no-focus min-h-12 rounded-1.5 border"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ))}
+
+        <Button
+          disabled={form.formState.isSubmitting}
+          className="primary-gradient paragraph-medium min-h-12 w-full rounded-2 px-4 py-3 font-inter !text-light-900"
+        >
+          {form.formState.isSubmitting
+            ? buttonText === 'Sign In'
+              ? 'Signin In...'
+              : 'Signing Up...'
+            : buttonText}
+        </Button>
+
+        {formType === 'SIGN_IN' ? (
+          <p>
+            Don't have an account?{' '}
+            <Link
+              href={ROUTES.SIGN_UP}
+              className="paragraph-semibold primary-text-gradient"
+            >
+              Sign up
+            </Link>
+          </p>
+        ) : (
+          <p>
+            Already have an account?{' '}
+            <Link
+              href={ROUTES.SIGN_IN}
+              className="paragraph-semibold primary-text-gradient"
+            >
+              Sign in
+            </Link>
+          </p>
         )}
-      </div>
-      <button type="submit" className="btn-primary">
-        {type === 'sign-in' ? 'Sign In' : 'Sign Up'}
-      </button>
-    </form>
+      </form>
+    </Form>
   )
 }
 
