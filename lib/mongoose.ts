@@ -1,20 +1,18 @@
-import mongoose from 'mongoose'
+import mongoose, { Mongoose } from 'mongoose'
 
-// URL koneksi ke MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'your_mongodb_connection_string'
+const MONGODB_URI = process.env.MONGODB_URI as string
 
 if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable')
+  throw new Error('MONGODB_URI is not defined')
 }
 
-// Gunakan cache global untuk mencegah koneksi ulang di lingkungan pengembangan
 interface MongooseCache {
-  conn: typeof mongoose | null
-  promise: Promise<typeof mongoose> | null
+  conn: Mongoose | null
+  promise: Promise<Mongoose> | null
 }
 
 declare global {
-  // Tambahkan tipe untuk cache agar TypeScript tidak menghasilkan error
+  // eslint-disable-next-line no-var
   var mongoose: MongooseCache
 }
 
@@ -24,18 +22,28 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null }
 }
 
-async function dbConnect(): Promise<typeof mongoose> {
+const dbConnect = async (): Promise<Mongoose> => {
   if (cached.conn) {
     return cached.conn
   }
 
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(MONGODB_URI)
-      .then((mongooseInstance) => mongooseInstance)
+      .connect(MONGODB_URI, {
+        dbName: 'LokHabitizeDB'
+      })
+      .then((result) => {
+        console.log('Connected to MongoDB')
+        return result
+      })
+      .catch((error) => {
+        console.error('Error connecting to MongoDB', error)
+        throw error
+      })
   }
 
   cached.conn = await cached.promise
+
   return cached.conn
 }
 

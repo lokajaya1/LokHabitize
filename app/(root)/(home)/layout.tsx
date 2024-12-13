@@ -1,8 +1,10 @@
+import Navbar from '@/components/navbar'
+
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main>
       <div>
-        {/* Content for sign-in or sign-up */}
+        <Navbar />
         {children}
       </div>
     </main>
