@@ -11,7 +11,7 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
           <div className="space-y-2.5">
             <h1 className="h2-bold text-dark100_light900">LokHabitize</h1>
             <p className="paragraph-regular text-dark500_light400">
-              To get your questions answered
+              Daily habit tracker
             </p>
           </div>
           <Image
