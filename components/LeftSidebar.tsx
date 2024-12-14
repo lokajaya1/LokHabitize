@@ -1,6 +1,6 @@
 const LeftSidebar = () => {
   return (
-    <div className="bg-gray-900 text-white w-14 flex flex-col items-center py-4 rounded-r-lg h-auto">
+    <div className="bg-gray-900 text-white w-14 flex flex-col items-center py-4 rounded-lg h-auto pt-8">
       <div className="mb-8">
         <i className="fas fa-th-large text-2xl"></i>
       </div>

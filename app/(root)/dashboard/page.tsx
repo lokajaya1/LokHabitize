@@ -1,43 +1,17 @@
+import Header from '@/components/header'
+import LeftSidebar from '@/components/LeftSidebar'
 import React from 'react'
 
 const Dashboard = () => {
   return (
     <div className="bg-gray-100 font-sans h-screen flex p-4">
       {/* Sidebar */}
-      <div className="bg-gray-900 text-white w-14 flex flex-col items-center py-4 rounded-lg h-auto">
-        {['fa-th-large', 'fa-calendar-alt', 'fa-sign-out-alt'].map(
-          (icon, index) => (
-            <div
-              key={index}
-              className="mb-8 flex justify-center items-center w-10 h-10"
-            >
-              <i className={`fas ${icon} text-xl`}></i>
-            </div>
-          )
-        )}
-      </div>
+      <LeftSidebar />
 
       {/* Main Content */}
       <div className="flex-1 p-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-4">
-            <img
-              src="https://storage.googleapis.com/a1aa/image/JQW7zykhEAIcFhWTT9onHORJQbID4mCfAAoB6ISRHds3iS9JA.jpg"
-              alt="User avatar"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
-            <div className="w-10 h-10 flex justify-center items-center">
-              <i className="fas fa-bell text-xl"></i>
-            </div>
-            <div className="w-10 h-10 flex justify-center items-center">
-              <i className="fas fa-ellipsis-v text-xl"></i>
-            </div>
-          </div>
-          <div className="text-2xl font-bold text-gray-800">LokHabitize</div>
-        </div>
+        <Header />
 
         <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-800">Hi, John!</h1>
