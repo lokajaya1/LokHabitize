@@ -37,8 +37,7 @@ export const UserSchema = z.object({
     .string()
     .min(3, { message: 'Username must be at least 3 characters long.' }),
   email: z.string().email({ message: 'Please provide a valid email address.' }),
-  image: z.string().url({ message: 'Please provide a valid URL.' }).optional(),
-  location: z.string().optional()
+  image: z.string().url({ message: 'Please provide a valid URL.' }).optional()
 })
 
 export const AccountSchema = z.object({

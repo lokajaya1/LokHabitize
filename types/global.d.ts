@@ -54,15 +54,14 @@ interface PaginatedSearchParams {
 // User Credentials for Auth
 // ------------------------
 interface AuthCredentials {
+  username?: string
   email: string
   password: string
-  username?: string
-  name?: string
 }
 
 interface SessionUser {
   _id: string
-  name: string
+  username: string
   email: string
   image?: string
 }

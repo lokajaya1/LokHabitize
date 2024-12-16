@@ -15,28 +15,31 @@ const Header = async () => {
         {session?.user?.id ? (
           <UserAvatar
             id={session.user.id} // ID user dari session
-            username={session.user.username || 'user'} // Username (fallback)
-            imageUrl={session.user.image || null} // URL gambar user
+            username={session.user.username} // Username
+            imageUrl={session.user.image || null} // URL gambar user jika ada
           />
         ) : (
           // Avatar default jika user tidak login
-          <Image
-            src="https://storage.googleapis.com/a1aa/image/JQW7zykhEAIcFhWTT9onHORJQbID4mCfAAoB6ISRHds3iS9JA.jpg"
-            alt="Default avatar"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
+          <div className="h-10 w-10 rounded-full overflow-hidden">
+            <Image
+              src="https://storage.googleapis.com/a1aa/image/JQW7zykhEAIcFhWTT9onHORJQbID4mCfAAoB6ISRHds3iS9JA.jpg"
+              alt="Default avatar"
+              width={40}
+              height={40}
+              loading="lazy"
+              className="object-cover"
+            />
+          </div>
         )}
 
         {/* Ikon Lonceng */}
         <div className="w-10 h-10 flex justify-center items-center">
-          <i className="fas fa-bell text-xl"></i>
+          <i className="fas fa-bell text-xl text-gray-600"></i>
         </div>
 
         {/* Ikon Menu */}
         <div className="w-10 h-10 flex justify-center items-center">
-          <i className="fas fa-ellipsis-v text-xl"></i>
+          <i className="fas fa-ellipsis-v text-xl text-gray-600"></i>
         </div>
       </div>
 

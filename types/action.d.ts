@@ -2,9 +2,9 @@ interface SignInWithOAuthParams {
   provider: 'google'
   providerAccountId: string
   user: {
+    username: string
     email: string
     image: string
-    username: string
   }
 }
 
