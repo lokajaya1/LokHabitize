@@ -22,7 +22,7 @@ const Header = async () => {
           // Avatar default jika user tidak login
           <div className="h-10 w-10 rounded-full overflow-hidden">
             <Image
-              src="https://storage.googleapis.com/a1aa/image/JQW7zykhEAIcFhWTT9onHORJQbID4mCfAAoB6ISRHds3iS9JA.jpg"
+              src="/icons/avatar.svg"
               alt="Default avatar"
               width={40}
               height={40}
