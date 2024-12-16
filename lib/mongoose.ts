@@ -1,4 +1,4 @@
-import mongoose, { Mongoose } from 'mongoose'
+import type { Mongoose } from 'mongoose'
 
 const MONGODB_URI = process.env.MONGODB_URI as string
 
@@ -12,7 +12,7 @@ interface MongooseCache {
 }
 
 declare global {
-  // eslint-disable-next-line no-var
+  // Allow global mongoose cache for hot reloading in development
   var mongoose: MongooseCache
 }
 
@@ -28,6 +28,7 @@ const dbConnect = async (): Promise<Mongoose> => {
   }
 
   if (!cached.promise) {
+    const mongoose = await import('mongoose') // Dynamic import to avoid Edge Runtime issues
     cached.promise = mongoose
       .connect(MONGODB_URI, {
         dbName: 'LokHabitizeDB'
