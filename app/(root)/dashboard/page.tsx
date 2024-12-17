@@ -29,7 +29,7 @@ const Dashboard = () => {
         <Header />
 
         <div className="mb-6">
-          <h1>Hi, {session?.user?.username}!</h1>
+          <h1>Hi, {session?.user?.name}!</h1>
         </div>
 
         <div className="flex space-x-6">

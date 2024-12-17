@@ -1,17 +1,17 @@
 import { NextResponse } from 'next/server'
 
 import Account from '@/database/account.model'
-import handleError from '@/lib/handlers/error'
 import { ForbiddenError } from '@/lib/http-errors'
 import dbConnect from '@/lib/mongoose'
 import { AccountSchema } from '@/lib/validations'
 import { APIErrorResponse } from '@/types/global'
+import handleError from '@/lib/handlers/error'
 
 export async function GET() {
   try {
     await dbConnect()
 
-    const accounts = await Account.find().lean()
+    const accounts = await Account.find()
 
     return NextResponse.json({ success: true, data: accounts }, { status: 200 })
   } catch (error) {
@@ -22,21 +22,20 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     await dbConnect()
-
     const body = await request.json()
+
     const validatedData = AccountSchema.parse(body)
 
-    // Cek duplikat akun
     const existingAccount = await Account.findOne({
       provider: validatedData.provider,
       providerAccountId: validatedData.providerAccountId
     })
 
-    if (existingAccount) {
-      throw new ForbiddenError('Account with the same provider already exists')
-    }
+    if (existingAccount)
+      throw new ForbiddenError(
+        'An account with the same provider already exists'
+      )
 
-    // Membuat akun baru
     const newAccount = await Account.create(validatedData)
 
     return NextResponse.json(

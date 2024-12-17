@@ -22,8 +22,8 @@ const Header = () => {
         {session?.user?.id ? (
           <UserAvatar
             id={session.user.id}
-            username={session?.user?.username}
-            imageUrl={session?.user?.image || null}
+            username={session.user.name!}
+            imageUrl={session.user?.image}
           />
         ) : (
           // Avatar default jika user tidak login
