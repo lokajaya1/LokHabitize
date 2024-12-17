@@ -6,8 +6,6 @@ export interface IUser {
   bio?: string
   image?: string
   location?: string
-  portfolio?: string
-  reputation?: number
 }
 
 export interface IUserDoc extends IUser, Document {}

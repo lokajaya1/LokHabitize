@@ -2,11 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
+  useForm,
   DefaultValues,
   FieldValues,
   Path,
-  SubmitHandler,
-  useForm
+  SubmitHandler
 } from 'react-hook-form'
 import { z, ZodType } from 'zod'
 import {
@@ -14,19 +14,21 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import ROUTES from '@/constants/routes'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { toast } from '@/hooks/use-toast'
+import { ActionResponse } from '@/types/global'
 
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>
   defaultValues: T
   formType: 'SIGN_IN' | 'SIGN_UP'
-  onSubmit: (data: T) => Promise<{ success: boolean }>
+  onSubmit: (data: T) => Promise<ActionResponse>
 }
 
 const AuthForm = <T extends FieldValues>({
@@ -35,13 +37,32 @@ const AuthForm = <T extends FieldValues>({
   formType,
   onSubmit
 }: AuthFormProps<T>) => {
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: defaultValues as DefaultValues<T>
   })
 
   const handleSubmit: SubmitHandler<T> = async (data) => {
-    await onSubmit(data)
+    const response = await onSubmit(data)
+
+    if (response?.success) {
+      toast({
+        title: 'Success',
+        description:
+          formType === 'SIGN_IN'
+            ? 'Signed in successfully!'
+            : 'Account created successfully!'
+      })
+      router.push(ROUTES.DASHBOARD)
+    } else {
+      toast({
+        title: `Error ${response?.status}`,
+        description: response?.error?.message,
+        variant: 'destructive'
+      })
+    }
   }
 
   const buttonText = formType === 'SIGN_IN' ? 'Sign In' : 'Create Account'
@@ -53,54 +74,43 @@ const AuthForm = <T extends FieldValues>({
       </h2>
       <p className="text-gray-600 mb-6 text-center">
         {formType === 'SIGN_IN'
-          ? 'Sign in with email'
-          : 'Sign up with your email'}
+          ? 'Sign in with your email and password'
+          : 'Sign up with your email and password'}
       </p>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          {Object.keys(defaultValues || {})
-            .filter((field) => !(formType === 'SIGN_UP' && field === 'name'))
-            .map((field) => (
-              <FormField
-                key={field}
-                control={form.control}
-                name={field as Path<T>}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type={field.name === 'password' ? 'password' : 'text'}
-                        placeholder={
-                          field.name === 'email'
-                            ? 'Email address'
-                            : field.name === 'password'
-                              ? 'Password'
-                              : 'Enter your ' + field.name
-                        }
-                        {...field}
-                        className="w-full p-4 rounded-full bg-gray-200 text-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-
-          {formType === 'SIGN_IN' && (
-            <p className="text-sm text-gray-600 text-center">
-              Forgot your password?{' '}
-              <Link href="#" className="text-blue-600 hover:underline">
-                Forgot password?
-              </Link>
-            </p>
-          )}
+          {Object.keys(defaultValues).map((field) => (
+            <FormField
+              key={field}
+              control={form.control}
+              name={field as Path<T>}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type={field.name === 'password' ? 'password' : 'text'}
+                      placeholder={
+                        field.name === 'email'
+                          ? 'Email address'
+                          : field.name === 'password'
+                            ? 'Password'
+                            : `Enter your ${field.name}`
+                      }
+                      {...field}
+                      className="w-full p-4 rounded-lg bg-gray-100 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
 
           <Button
             type="submit"
             disabled={form.formState.isSubmitting}
-            className="w-full bg-purple-600 text-white p-4 rounded-full hover:bg-purple-700 flex items-center justify-center"
+            className="w-full bg-primary text-white p-4 rounded-lg hover:bg-primary-dark flex items-center justify-center"
           >
             {form.formState.isSubmitting ? (
               <span className="flex items-center gap-2">
@@ -117,7 +127,7 @@ const AuthForm = <T extends FieldValues>({
       <p className="text-gray-600 text-center text-sm mt-4">
         {formType === 'SIGN_IN' ? (
           <>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link
               href={ROUTES.SIGN_UP}
               className="text-blue-600 hover:underline"

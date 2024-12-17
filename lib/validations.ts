@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+// SignIn Schema: Validasi untuk login
 export const SignInSchema = z.object({
   email: z
     .string()
@@ -8,10 +9,11 @@ export const SignInSchema = z.object({
 
   password: z
     .string()
-    .min(6, { message: 'Password must be at least 6 characters long. ' })
+    .min(6, { message: 'Password must be at least 6 characters long.' })
     .max(100, { message: 'Password cannot exceed 100 characters.' })
 })
 
+// SignUp Schema: Validasi untuk registrasi
 export const SignUpSchema = z.object({
   username: z
     .string()
@@ -32,6 +34,7 @@ export const SignUpSchema = z.object({
     .max(100, { message: 'Password cannot exceed 100 characters.' })
 })
 
+// User Schema: Validasi untuk data pengguna
 export const UserSchema = z.object({
   username: z
     .string()
@@ -40,6 +43,7 @@ export const UserSchema = z.object({
   image: z.string().url({ message: 'Please provide a valid URL.' }).optional()
 })
 
+// Account Schema: Validasi untuk akun OAuth atau manual
 export const AccountSchema = z.object({
   userId: z.string().min(1, { message: 'User ID is required.' }),
   image: z.string().url({ message: 'Please provide a valid URL.' }).optional(),
@@ -54,8 +58,9 @@ export const AccountSchema = z.object({
     .min(1, { message: 'Provider Account ID is required.' })
 })
 
+// SignInWithOAuth Schema: Validasi untuk OAuth sign-in
 export const SignInWithOAuthSchema = z.object({
-  provider: z.enum(['google']),
+  provider: z.enum(['google']), // Tambahkan provider lain jika diperlukan
   providerAccountId: z
     .string()
     .min(1, { message: 'Provider Account ID is required.' }),

@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { ReactNode } from 'react'
 import SocialAuthForm from '@/components/forms/SocialAuthForm'
+import { Button } from '@/components/ui/button'
 
 const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -12,9 +13,9 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
           <Image
             src="/images/ImgSection.svg"
             alt="Authentication Background"
-            layout="fill"
-            objectFit="cover"
+            fill
             priority
+            style={{ objectFit: 'cover' }}
             className="absolute inset-0 z-0"
           />
           {/* Overlay */}
@@ -22,56 +23,25 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
 
           {/* Navigation Buttons */}
           <div className="absolute top-6 left-6 z-20 flex space-x-4">
-            <button
-              className="
-                bg-white/20 text-white
-                p-3 rounded-full
-                hover:bg-white/30
-                focus:outline-none focus:ring-2 focus:ring-white
-                transition duration-300
-                flex items-center justify-center
-              "
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
-            </button>
-            <button
-              className="
-                bg-white/20 text-white
-                p-3 rounded-full
-                hover:bg-white/30
-                focus:outline-none focus:ring-2 focus:ring-white
-                transition duration-300
-                flex items-center justify-center
-              "
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                />
-              </svg>
-            </button>
+            {/* Tombol Panah Kiri */}
+            <Button className="bg-primary text-white hover:bg-primary-dark">
+              <Image
+                src="/icons/arrow_back.svg"
+                alt="Arrow Back"
+                width={18}
+                height={18}
+              />
+            </Button>
+
+            {/* Tombol Tiga Titik */}
+            <Button className="bg-main-black text-white p-2 rounded-xl hover:bg-primary-dark">
+              <Image
+                src="/icons/three-dots.svg"
+                alt="Ellipsis Icon"
+                width={8}
+                height={18}
+              />
+            </Button>
           </div>
         </div>
 

@@ -6,7 +6,7 @@ import ROUTES from '@/constants/routes'
 
 import { Avatar, AvatarFallback } from './ui/avatar'
 
-interface UserAvatarProps {
+interface Props {
   id: string
   username: string
   imageUrl?: string | null
@@ -17,34 +17,29 @@ const UserAvatar = ({
   id,
   username,
   imageUrl,
-  className = 'h-10 w-10'
-}: UserAvatarProps) => {
-  const initials = username.slice(0, 2).toUpperCase()
+  className = 'h-9 w-9'
+}: Props) => {
+  const initials =
+    username
+      ?.split(' ')
+      .map((word: string) => word[0])
+      .join('')
+      .toUpperCase() || ''
 
   return (
-    <Link
-      href={ROUTES.PROFILE(id)}
-      prefetch={false} // Non-preload jika jarang dikunjungi
-      className="block rounded-full hover:opacity-80 transition-opacity duration-200"
-      aria-label={`Visit ${username}'s profile`}
-    >
+    <Link href={ROUTES.PROFILE(id)}>
       <Avatar className={className}>
         {imageUrl ? (
           <Image
             src={imageUrl}
-            alt={`Profile picture of ${username}`}
-            className="object-cover rounded-full"
-            width={40}
-            height={40}
-            layout="intrinsic" // Untuk ukuran yang dinamis
+            alt={username}
+            className="object-cover"
+            width={36}
+            height={36}
             quality={100}
-            loading="lazy"
           />
         ) : (
-          <AvatarFallback
-            className="bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white"
-            title={username} // Tooltip aksesibilitas
-          >
+          <AvatarFallback className="primary-gradient font-space-grotesk font-bold tracking-wider text-white">
             {initials}
           </AvatarFallback>
         )}

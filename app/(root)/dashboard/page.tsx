@@ -1,9 +1,23 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
 import Article from '@/components/Article'
-import Header from '@/components/header'
 import LeftSidebar from '@/components/LeftSidebar'
-import React from 'react'
+import Header from '@/components/header'
 
 const Dashboard = () => {
+  const { data: session, status } = useSession() // Menambahkan status untuk pengecekan session
+  console.log('Session Data:', session)
+
+  if (status === 'loading') {
+    // Optionally, you can show a loading indicator if session data is still being fetched
+    return <div>Loading...</div>
+  }
+
+  if (!session) {
+    return <div>Please log in to view the dashboard.</div> // Handle if session is not available
+  }
+
   return (
     <div className="bg-gray-100 font-sans h-screen flex p-4">
       {/* Sidebar */}
@@ -15,7 +29,7 @@ const Dashboard = () => {
         <Header />
 
         <div className="mb-6">
-          <h1 className="text-4xl font-bold text-gray-800">Hi, John!</h1>
+          <h1>Hi, {session?.user?.username}!</h1>
         </div>
 
         <div className="flex space-x-6">

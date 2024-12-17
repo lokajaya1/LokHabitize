@@ -1,11 +1,18 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 
-import { auth } from '@/auth' // Mengambil session user
+import { useSession } from 'next-auth/react' // Menggunakan useSession dari next-auth
 import UserAvatar from '@/components/UserAvatar' // Komponen UserAvatar
 
-const Header = async () => {
-  const session = await auth() // Ambil sesi autentikasi user
+const Header = () => {
+  const { data: session, status } = useSession() // Menggunakan hook useSession
+
+  // Menunggu session selesai loading
+  if (status === 'loading') {
+    return <div>Loading...</div> // Menampilkan loading state saat session sedang dimuat
+  }
 
   return (
     <div className="flex justify-between items-center mb-6">
@@ -14,9 +21,9 @@ const Header = async () => {
         {/* Gunakan komponen UserAvatar */}
         {session?.user?.id ? (
           <UserAvatar
-            id={session.user.id} // ID user dari session
-            username={session.user.username} // Username
-            imageUrl={session.user.image || null} // URL gambar user jika ada
+            id={session.user.id}
+            username={session?.user?.username}
+            imageUrl={session?.user?.image || null}
           />
         ) : (
           // Avatar default jika user tidak login
