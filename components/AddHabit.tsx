@@ -59,7 +59,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
           <div className="space-x-2">
             <Button
               variant="ghost"
-              className="bg-transparent text-primary shadow-none"
+              className="bg-transparent text-primary shadow-none hover:border hover:border-primary hover:bg-transparent"
               onClick={onClose}
             >
               Cancel
@@ -212,6 +212,9 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                   <SelectContent className="z-[60] bg-white rounded-md">
                     <SelectItem value="Mins">Mins</SelectItem>
                     <SelectItem value="Hours">Hours</SelectItem>
+                    <SelectItem value="Times">Times</SelectItem>
+                    <SelectItem value="Km">Km</SelectItem>
+                    <SelectItem value="M">M</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

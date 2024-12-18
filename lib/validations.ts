@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-// SignIn Schema: Validasi untuk login
+// Schema untuk validasi Login
 export const SignInSchema = z.object({
   email: z
     .string()
@@ -13,7 +13,7 @@ export const SignInSchema = z.object({
     .max(100, { message: 'Password cannot exceed 100 characters.' })
 })
 
-// SignUp Schema: Validasi untuk registrasi
+// Schema untuk validasi Registrasi
 export const SignUpSchema = z.object({
   username: z
     .string()
@@ -34,7 +34,7 @@ export const SignUpSchema = z.object({
     .max(100, { message: 'Password cannot exceed 100 characters.' })
 })
 
-// User Schema: Validasi untuk data pengguna
+// Schema untuk validasi data User
 export const UserSchema = z.object({
   username: z
     .string()
@@ -43,7 +43,7 @@ export const UserSchema = z.object({
   image: z.string().url({ message: 'Please provide a valid URL.' }).optional()
 })
 
-// Account Schema: Validasi untuk akun OAuth atau manual
+// Schema untuk validasi data Akun
 export const AccountSchema = z.object({
   userId: z.string().min(1, { message: 'User ID is required.' }),
   image: z.string().url({ message: 'Please provide a valid URL.' }).optional(),
@@ -58,7 +58,7 @@ export const AccountSchema = z.object({
     .min(1, { message: 'Provider Account ID is required.' })
 })
 
-// SignInWithOAuth Schema: Validasi untuk OAuth sign-in
+// Schema untuk validasi Login menggunakan OAuth
 export const SignInWithOAuthSchema = z.object({
   provider: z.enum(['google']), // Tambahkan provider lain jika diperlukan
   providerAccountId: z
@@ -74,3 +74,35 @@ export const SignInWithOAuthSchema = z.object({
     image: z.string().url('Invalid image URL').optional()
   })
 })
+
+// Schema untuk validasi pembuatan Habit
+export const HabitCreateSchema = z.object({
+  title: z
+    .string()
+    .min(1, { message: 'Title is required.' })
+    .max(100, { message: 'Title cannot exceed 100 characters.' }),
+  goal: z
+    .number()
+    .min(1, { message: 'Goal must be at least 1.' })
+    .max(100, { message: 'Goal cannot exceed 100.' }),
+  repeat: z.enum(['Daily', 'Weekly', 'Monthly'], {
+    message: 'Repeat must be one of Daily, Weekly, or Monthly.'
+  }),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+    message: 'Start date must be in YYYY-MM-DD format.'
+  }),
+  location: z.string().optional(),
+  duration: z.number().min(1, { message: 'Duration must be at least 1.' }),
+  durationUnit: z.enum(['Mins', 'Hours'], {
+    message: 'Duration unit must be Mins or Hours.'
+  }),
+  reminder: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/, {
+      message: 'Reminder must be in HH:MM format.'
+    })
+    .optional()
+})
+
+// Schema untuk validasi pembaruan Habit
+export const HabitUpdateSchema = HabitCreateSchema.partial()

@@ -1,50 +1,42 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import { model, models, Schema, Document } from 'mongoose'
 
-// Define an interface for the Habit document
-export interface IHabit extends Document {
-  name: string
-  description?: string
-  frequency: string[] // e.g., ["Monday", "Wednesday", "Friday"]
+export interface IHabit {
+  title: string
+  goal: number
+  repeat: 'Daily' | 'Weekly' | 'Monthly'
   startDate: Date
-  isActive: boolean
-  userId: mongoose.Types.ObjectId // Reference to a User document
+  location?: string
+  duration: number
+  durationUnit: 'Mins' | 'Hours' | 'Times' | 'Km' | 'M'
+  reminder?: string
 }
 
-// Define the schema for the Habit model
-const HabitSchema: Schema = new Schema(
+export interface IHabitDoc extends IHabit, Document {}
+
+const HabitSchema = new Schema<IHabit>(
   {
-    name: {
+    title: { type: String, required: true },
+    goal: { type: Number, required: true, min: 1 },
+    repeat: {
       type: String,
-      required: true,
-      trim: true
+      enum: ['Daily', 'Weekly', 'Monthly'],
+      required: true
     },
-    description: {
+    startDate: { type: Date, required: true },
+    location: { type: String },
+    duration: { type: Number, required: true, min: 1 },
+    durationUnit: {
       type: String,
-      trim: true
-    },
-    frequency: {
-      type: [String],
+      enum: ['Mins', 'Hours', 'Times', 'Km', 'M'],
       required: true
     },
-    startDate: {
-      type: Date,
-      required: true
-    },
-    isActive: {
-      type: Boolean,
-      default: true
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User', // Assumes there is a User model
-      required: true
-    }
+    reminder: { type: String, default: 'No reminder set' }
   },
-  {
-    timestamps: true // Automatically add createdAt and updatedAt timestamps
-  }
+  { timestamps: true }
 )
 
-// Export the Habit model
-const Habit = mongoose.model<IHabit>('Habit', HabitSchema)
+HabitSchema.index({ title: 1 })
+
+const Habit = models?.Habit || model<IHabit>('Habit', HabitSchema)
+
 export default Habit
