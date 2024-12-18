@@ -7,7 +7,6 @@ import Header from '@/components/header'
 
 const Dashboard = () => {
   const { data: session, status } = useSession() // Menambahkan status untuk pengecekan session
-  console.log('Session Data:', session)
 
   if (status === 'loading') {
     // Optionally, you can show a loading indicator if session data is still being fetched

@@ -34,7 +34,6 @@ const dbConnect = async (): Promise<Mongoose> => {
         dbName: 'LokHabitizeDB'
       })
       .then((result) => {
-        console.log('Connected to MongoDB')
         return result
       })
       .catch((error) => {

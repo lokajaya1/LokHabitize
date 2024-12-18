@@ -9,19 +9,13 @@ import { api } from './lib/api'
 import { SignInSchema } from './lib/validations'
 import { ActionResponse } from './types/global'
 
-const isDev = process.env.NODE_ENV === 'development'
-const log = (...args: any[]) => isDev && console.log(...args)
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google,
     Credentials({
       async authorize(credentials) {
-        log('Credentials input:', credentials)
-
         const validatedFields = SignInSchema.safeParse(credentials)
         if (!validatedFields.success) {
-          log('Input validation failed:', validatedFields.error)
           return null
         }
 
@@ -33,7 +27,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           )) as ActionResponse<IAccountDoc>
 
         if (!accountSuccess || !existingAccount || !existingAccount.password) {
-          log('Account not found or invalid for email:', email)
           return null
         }
 
@@ -43,7 +36,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           )) as ActionResponse<IUserDoc>
 
         if (!userSuccess || !existingUser) {
-          log('User not found for userId:', existingAccount.userId)
           return null
         }
 
@@ -62,7 +54,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         }
 
-        log('Invalid password for user:', existingUser.email)
         return null
       }
     })
@@ -75,9 +66,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      console.log('Session before modification:', session)
-      console.log('Token:', token)
-
       session.user.id = token.sub as string
       return session
     }
