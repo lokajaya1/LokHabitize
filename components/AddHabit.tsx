@@ -9,11 +9,26 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import Image from 'next/image'
 
 interface AddHabitProps {
   onClose: () => void
   onCreate: (habit: Record<string, any>) => void
 }
+
+const titleOptions = [
+  { value: 'Cooking', icon: '/icons/Chef Hat.svg' },
+  { value: 'Running', icon: '/icons/running.svg' },
+  { value: 'Work Out', icon: '/icons/workout.svg' },
+  { value: 'Study', icon: '/icons/pencil.svg' },
+  { value: 'Read Books', icon: '/icons/bookCategory.svg' },
+  { value: 'Cycling', icon: '/icons/cycling.svg' },
+  { value: 'Creative Time', icon: '/icons/palette.svg' },
+  { value: 'Get Good Sleep', icon: '/icons/bed.svg' },
+  { value: 'Coffee Break', icon: '/icons/coffee.svg' },
+  { value: 'Set A To-Do List', icon: '/icons/key.svg' },
+  { value: 'Other', icon: '' }
+]
 
 const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
   const [timesUnit, setTimesUnit] = useState('Mins')
@@ -26,6 +41,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
     duration: 0,
     reminder: ''
   })
+  const [showTitleDropdown, setShowTitleDropdown] = useState(false)
 
   const handleInputChange = (field: string, value: any) => {
     setHabitData((prev) => ({ ...prev, [field]: value }))
@@ -38,31 +54,75 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-2xl">
+      <div className="bg-white p-8 rounded-lg w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold">New Habit</h2>
           <div className="space-x-2">
-            <Button variant="ghost" onClick={onClose}>
+            <Button
+              variant="ghost"
+              className="bg-transparent text-primary shadow-none"
+              onClick={onClose}
+            >
               Cancel
             </Button>
             <Button onClick={handleCreate}>Create</Button>
           </div>
         </div>
-        <form className="space-y-6">
+        <form className="space-y-6 relative">
           {/* Title Input */}
           <div>
             <Label htmlFor="title" className="text-gray-600">
               Title
             </Label>
-            <div className="flex items-center space-x-2">
-              <Input
-                id="title"
-                type="text"
-                placeholder="Enter habit title"
-                value={habitData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                className="w-full"
-              />
+            <div className="relative">
+              <div className="flex items-center space-x-2">
+                <Input
+                  id="title"
+                  type="text"
+                  placeholder="Enter habit title"
+                  value={habitData.title}
+                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  className="w-full"
+                />
+                <Button
+                  onClick={() => setShowTitleDropdown((prev) => !prev)}
+                  aria-label="Open title dropdown"
+                  type="button"
+                >
+                  <Image
+                    src="/icons/book.svg"
+                    width={20}
+                    height={20}
+                    alt="category book"
+                  />
+                </Button>
+              </div>
+              {/* Dropdown */}
+              {showTitleDropdown && (
+                <div className="absolute z-50 mt-2 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-72 overflow-y-auto">
+                  {titleOptions.map((option) => (
+                    <div
+                      key={option.value}
+                      className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        handleInputChange('title', option.value)
+                        setShowTitleDropdown(false)
+                      }}
+                    >
+                      {option.icon && (
+                        <Image
+                          src={option.icon}
+                          width={20}
+                          height={20}
+                          alt={option.value}
+                          className="mr-2"
+                        />
+                      )}
+                      <span>{option.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -94,7 +154,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                 >
                   <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
-                <SelectContent className="z-[60] bg-white shadow-lg border border-gray-300 rounded-md mt-1">
+                <SelectContent className="z-[60] bg-white border border-gray-300 rounded-md mt-1">
                   <SelectItem value="Daily">Daily</SelectItem>
                   <SelectItem value="Weekly">Weekly</SelectItem>
                   <SelectItem value="Monthly">Monthly</SelectItem>
@@ -150,7 +210,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                   <SelectTrigger className="bg-white border border-gray-300 text-gray-700">
                     <SelectValue placeholder="Select unit" />
                   </SelectTrigger>
-                  <SelectContent className="z-[60] bg-white shadow-lg rounded-md">
+                  <SelectContent className="z-[60] bg-white rounded-md">
                     <SelectItem value="Mins">Mins</SelectItem>
                     <SelectItem value="Hours">Hours</SelectItem>
                   </SelectContent>
