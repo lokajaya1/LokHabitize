@@ -26,8 +26,7 @@ const titleOptions = [
   { value: 'Creative Time', icon: '/icons/palette.svg' },
   { value: 'Get Good Sleep', icon: '/icons/bed.svg' },
   { value: 'Coffee Break', icon: '/icons/coffee.svg' },
-  { value: 'Set A To-Do List', icon: '/icons/key.svg' },
-  { value: 'Other', icon: '' }
+  { value: 'Set A To-Do List', icon: '/icons/key.svg' }
 ]
 
 const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
