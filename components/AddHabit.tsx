@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { Button } from '@/components/ui/button' // shadcn button
-import { Input } from '@/components/ui/input' // shadcn input
-import { Label } from '@/components/ui/label' // shadcn label
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@/components/ui/select' // shadcn select
+} from '@/components/ui/select'
 
 interface AddHabitProps {
   onClose: () => void
@@ -90,7 +90,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
               >
                 <SelectTrigger
                   id="repeat"
-                  className="bg-white border border-gray-300 text-gray-700 rounded-md px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500"
+                  className="bg-white text-gray-700 rounded-md px-3 py-2"
                 >
                   <SelectValue placeholder="Select frequency" />
                 </SelectTrigger>
@@ -147,7 +147,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                   onValueChange={(value) => setTimesUnit(value)}
                   value={timesUnit}
                 >
-                  <SelectTrigger className="bg-white border border-gray-300 text-gray-700 rounded-md px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500">
+                  <SelectTrigger className="bg-white border border-gray-300 text-gray-700">
                     <SelectValue placeholder="Select unit" />
                   </SelectTrigger>
                   <SelectContent className="z-[60] bg-white shadow-lg rounded-md">
