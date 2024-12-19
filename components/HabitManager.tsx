@@ -85,7 +85,12 @@ const HabitManager: React.FC = () => {
 
         {/* Add Habit Modal */}
         {isAddHabitOpen && (
-          <AddHabit onClose={toggleAddHabitModal} onCreate={handleAddHabit} />
+          <AddHabit
+            onClose={toggleAddHabitModal}
+            onCreate={
+              handleAddHabit as (newHabit: Record<string, any>) => Promise<void>
+            }
+          />
         )}
       </div>
     </div>

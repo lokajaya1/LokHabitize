@@ -6,30 +6,44 @@ import { NotFoundError } from '../http-errors'
 import { HabitCreateSchema, HabitUpdateSchema } from '../validations'
 import { ActionResponse, ErrorResponse } from '@/types/global'
 
+async function withTransaction<T>(
+  callback: (session: mongoose.ClientSession) => Promise<T>
+): Promise<T> {
+  const session = await mongoose.startSession()
+  session.startTransaction()
+  try {
+    const result = await callback(session)
+    await session.commitTransaction()
+    return result
+  } catch (error) {
+    await session.abortTransaction()
+    throw error
+  } finally {
+    session.endSession()
+  }
+}
+
 export async function createHabit(
   params: Record<string, any>
 ): Promise<ActionResponse> {
   const validationResult = await action({ params, schema: HabitCreateSchema })
 
   if (validationResult instanceof Error) {
+    console.error('Validation Error:', validationResult)
     return handleError(validationResult) as ErrorResponse
   }
 
-  const session = await mongoose.startSession()
-  session.startTransaction()
-
   try {
     const habitData = validationResult.params
-    const [newHabit] = await Habit.create([habitData], { session })
-
-    await session.commitTransaction()
+    const newHabit = await withTransaction(async (session) => {
+      const [createdHabit] = await Habit.create([habitData], { session })
+      return createdHabit
+    })
 
     return { success: true, data: newHabit }
   } catch (error) {
-    await session.abortTransaction()
+    console.error('Error during habit creation:', error)
     return handleError(error) as ErrorResponse
-  } finally {
-    session.endSession()
   }
 }
 
@@ -43,50 +57,39 @@ export async function updateHabit(
     return handleError(validationResult) as ErrorResponse
   }
 
-  const session = await mongoose.startSession()
-  session.startTransaction()
-
   try {
-    const updatedHabit = await Habit.findByIdAndUpdate(
-      habitId,
-      validationResult.params,
-      { new: true, session }
-    )
+    const updatedHabit = await withTransaction(async (session) => {
+      const habit = await Habit.findByIdAndUpdate(
+        habitId,
+        validationResult.params,
+        { new: true, session }
+      )
 
-    if (!updatedHabit) {
-      throw new NotFoundError('Habit')
-    }
-
-    await session.commitTransaction()
+      if (!habit) {
+        throw new NotFoundError('Habit')
+      }
+      return habit
+    })
 
     return { success: true, data: updatedHabit }
   } catch (error) {
-    await session.abortTransaction()
     return handleError(error) as ErrorResponse
-  } finally {
-    session.endSession()
   }
 }
 
 export async function deleteHabit(habitId: string): Promise<ActionResponse> {
-  const session = await mongoose.startSession()
-  session.startTransaction()
-
   try {
-    const deletedHabit = await Habit.findByIdAndDelete(habitId, { session })
-
-    if (!deletedHabit) {
-      throw new NotFoundError('Habit')
-    }
-
-    await session.commitTransaction()
+    const deletedHabit = await withTransaction(async (session) => {
+      const habit = await Habit.findByIdAndDelete(habitId, { session })
+      if (!habit) {
+        throw new NotFoundError('Habit')
+      }
+      return habit
+    })
 
     return { success: true, data: deletedHabit }
   } catch (error) {
-    await session.abortTransaction()
     return handleError(error) as ErrorResponse
-  } finally {
-    session.endSession()
   }
 }
 

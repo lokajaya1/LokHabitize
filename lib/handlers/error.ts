@@ -16,7 +16,7 @@ const formatResponse = (
     success: false,
     error: {
       message,
-      details: errors
+      details: errors || null // Pastikan null jika errors tidak tersedia
     }
   }
 
@@ -34,6 +34,12 @@ const formatResponse = (
  * Menghandle berbagai tipe error termasuk RequestError, ZodError, dan Error umum.
  */
 const handleError = (error: unknown, responseType: ResponseType = 'server') => {
+  // Log awal untuk tipe error yang diterima
+  logger.error(
+    { type: typeof error, rawError: error },
+    'Raw error data received'
+  )
+
   // Jika error adalah turunan dari RequestError
   if (error instanceof RequestError) {
     logger.error(
@@ -70,6 +76,24 @@ const handleError = (error: unknown, responseType: ResponseType = 'server') => {
     logger.error({ message: error.message, stack: error.stack })
 
     return formatResponse(responseType, 500, error.message)
+  }
+
+  // Jika error adalah string
+  if (typeof error === 'string') {
+    logger.error({ message: error }, 'String error encountered')
+
+    return formatResponse(responseType, 500, error)
+  }
+
+  // Jika error adalah objek biasa
+  if (typeof error === 'object' && error !== null) {
+    logger.error({ err: error }, 'Unknown object error encountered')
+
+    return formatResponse(
+      responseType,
+      500,
+      'An unexpected object error occurred'
+    )
   }
 
   // Jika error tidak dikenal

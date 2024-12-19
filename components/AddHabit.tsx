@@ -10,15 +10,27 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import Image from 'next/image'
-import { titleOptions } from '@/constants/habitOptions' // Import dari file constants
+import { titleOptions } from '@/constants/habitOptions'
+import { createHabit } from '@/lib/actions/habit.action'
+
+interface HabitData {
+  title: string
+  goal: string | number
+  repeat: string
+  startDate: string
+  location: string
+  duration: string | number
+  durationUnit: string
+  reminder: string
+}
 
 interface AddHabitProps {
   onClose: () => void
-  onCreate: (habit: Record<string, any>) => Promise<void>
+  onCreate: (newHabit: HabitData) => Promise<void>
 }
 
 const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
-  const [habitData, setHabitData] = useState({
+  const [habitData, setHabitData] = useState<HabitData>({
     title: '',
     goal: '',
     repeat: 'Daily',
@@ -28,21 +40,22 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
     durationUnit: 'Mins',
     reminder: ''
   })
+
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const today = new Date().toISOString().split('T')[0]
 
-  const handleInputChange = (field: keyof typeof habitData, value: any) => {
+  const handleInputChange = (field: keyof HabitData, value: any) => {
     if (field === 'goal' || field === 'duration') {
       value = value !== '' ? Math.max(0, Number(value)) : ''
     }
     setHabitData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const validateForm = () => {
-    const requiredFields = [
+  const validateForm = (): string | null => {
+    const requiredFields: (keyof HabitData)[] = [
       'title',
       'goal',
       'startDate',
@@ -50,8 +63,9 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
       'duration',
       'reminder'
     ]
+
     for (const field of requiredFields) {
-      if (!habitData[field as keyof typeof habitData]) {
+      if (!habitData[field]) {
         return `Field "${field}" is required.`
       }
     }
@@ -80,11 +94,13 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
 
     setError(null)
     setIsLoading(true)
+
     try {
-      await onCreate(habitData)
-      onClose()
-    } catch (err) {
-      console.error('Error creating habit:', err)
+      await onCreate(habitData) // Pastikan fungsi ini menangani penyimpanan ke MongoDB
+      setIsLoading(false)
+      onClose() // Tutup modal setelah berhasil
+    } catch (err: any) {
+      console.error('Error creating habit:', err.message || err)
       setError('Failed to create habit. Please try again.')
     } finally {
       setIsLoading(false)
@@ -111,7 +127,6 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
           <div>
             <Label htmlFor="title">Title</Label>
             <div className="relative flex items-center space-x-2">
-              {/* Input Field */}
               <Input
                 id="title"
                 type="text"
@@ -120,8 +135,6 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 className="bg-gray-100 text-black border-none"
               />
-
-              {/* Dropdown Toggle Button */}
               <Button
                 className="p-2 bg-primary rounded-xl"
                 type="button"
@@ -134,8 +147,6 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                   alt="book"
                 />
               </Button>
-
-              {/* Dropdown */}
               {isDropdownVisible && (
                 <div className="absolute top-12 left-0 bg-white border border-gray-300 shadow-lg rounded-md w-full z-10 max-h-72 overflow-y-auto">
                   {titleOptions.map((option) => (
@@ -245,6 +256,8 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
                     <SelectItem value="Mins">Mins</SelectItem>
                     <SelectItem value="Hours">Hours</SelectItem>
                     <SelectItem value="Times">Times</SelectItem>
+                    <SelectItem value="Km">Km</SelectItem>
+                    <SelectItem value="M">M</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
