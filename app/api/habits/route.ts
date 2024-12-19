@@ -7,6 +7,9 @@ import { ValidationError, NotFoundError } from '@/lib/http-errors'
 import handleError from '@/lib/handlers/error'
 import { APIErrorResponse } from '@/types/global'
 
+/**
+ * GET - Fetch one habit or all habits.
+ */
 export async function GET(
   request: Request
 ): Promise<NextResponse | APIErrorResponse> {
@@ -14,10 +17,10 @@ export async function GET(
     await dbConnect()
 
     const { searchParams } = new URL(request.url)
-    const id = searchParams.get('id') // Ambil ID jika tersedia
+    const id = searchParams.get('id') // Fetch ID if provided
 
     if (id) {
-      // Jika ID diberikan, cari habit berdasarkan ID
+      // Fetch habit by ID
       const habit = await Habit.findById(id)
       if (!habit) {
         throw new NotFoundError('Habit not found')
@@ -25,7 +28,7 @@ export async function GET(
       return NextResponse.json({ success: true, data: habit }, { status: 200 })
     }
 
-    // Jika tidak ada ID, ambil semua habit
+    // Fetch all habits
     const habits = await Habit.find()
     return NextResponse.json({ success: true, data: habits }, { status: 200 })
   } catch (error) {
@@ -33,6 +36,9 @@ export async function GET(
   }
 }
 
+/**
+ * POST - Create a new habit.
+ */
 export async function POST(
   request: Request
 ): Promise<NextResponse | APIErrorResponse> {
@@ -41,20 +47,27 @@ export async function POST(
 
     const body = await request.json()
 
+    // Validate incoming data using zod schema
     const validatedData = HabitCreateSchema.safeParse(body)
 
     if (!validatedData.success) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors)
     }
 
-    const newHabit = await Habit.create(validatedData.data)
+    // Create and save new habit
+    const newHabit = new Habit(validatedData.data)
+    await newHabit.save()
 
     return NextResponse.json({ success: true, data: newHabit }, { status: 201 })
   } catch (error) {
+    console.error('Error creating habit:', error)
     return handleError(error, 'api') as APIErrorResponse
   }
 }
 
+/**
+ * PUT - Update an existing habit by ID.
+ */
 export async function PUT(
   request: Request
 ): Promise<NextResponse | APIErrorResponse> {
@@ -68,12 +81,14 @@ export async function PUT(
       throw new ValidationError({ id: ['Habit ID is required'] })
     }
 
+    // Validate update data
     const validatedData = HabitUpdateSchema.safeParse(updateData)
 
     if (!validatedData.success) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors)
     }
 
+    // Update habit in database
     const updatedHabit = await Habit.findByIdAndUpdate(id, validatedData.data, {
       new: true
     })
@@ -87,10 +102,14 @@ export async function PUT(
       { status: 200 }
     )
   } catch (error) {
+    console.error('Error updating habit:', error)
     return handleError(error, 'api') as APIErrorResponse
   }
 }
 
+/**
+ * DELETE - Remove a habit by ID.
+ */
 export async function DELETE(
   request: Request
 ): Promise<NextResponse | APIErrorResponse> {
@@ -104,6 +123,7 @@ export async function DELETE(
       throw new ValidationError({ id: ['Habit ID is required'] })
     }
 
+    // Delete habit from database
     const deletedHabit = await Habit.findByIdAndDelete(id)
 
     if (!deletedHabit) {
@@ -115,6 +135,7 @@ export async function DELETE(
       { status: 200 }
     )
   } catch (error) {
+    console.error('Error deleting habit:', error)
     return handleError(error, 'api') as APIErrorResponse
   }
 }

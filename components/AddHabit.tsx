@@ -11,15 +11,14 @@ import {
 } from '@/components/ui/select'
 import Image from 'next/image'
 import { titleOptions } from '@/constants/habitOptions'
-import { createHabit } from '@/lib/actions/habit.action'
 
 interface HabitData {
   title: string
-  goal: string | number
+  goal: number
   repeat: string
   startDate: string
   location: string
-  duration: string | number
+  duration: number
   durationUnit: string
   reminder: string
 }
@@ -32,11 +31,11 @@ interface AddHabitProps {
 const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
   const [habitData, setHabitData] = useState<HabitData>({
     title: '',
-    goal: '',
+    goal: 0,
     repeat: 'Daily',
     startDate: '',
     location: '',
-    duration: '',
+    duration: 0,
     durationUnit: 'Mins',
     reminder: ''
   })
@@ -49,7 +48,7 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
 
   const handleInputChange = (field: keyof HabitData, value: any) => {
     if (field === 'goal' || field === 'duration') {
-      value = value !== '' ? Math.max(0, Number(value)) : ''
+      value = value !== '' ? Math.max(0, Number(value)) : 0
     }
     setHabitData((prev) => ({ ...prev, [field]: value }))
   }
@@ -74,11 +73,11 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
       return 'Start date cannot be in the past.'
     }
 
-    if (Number(habitData.goal) <= 0) {
+    if (habitData.goal <= 0) {
       return 'Goal must be greater than zero.'
     }
 
-    if (Number(habitData.duration) <= 0) {
+    if (habitData.duration <= 0) {
       return 'Duration must be greater than zero.'
     }
 
@@ -96,9 +95,21 @@ const AddHabit: React.FC<AddHabitProps> = ({ onClose, onCreate }) => {
     setIsLoading(true)
 
     try {
-      await onCreate(habitData) // Pastikan fungsi ini menangani penyimpanan ke MongoDB
-      setIsLoading(false)
-      onClose() // Tutup modal setelah berhasil
+      const response = await fetch('/api/habits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(habitData)
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save the habit.')
+      }
+
+      const newHabit = await response.json()
+      await onCreate(newHabit) // Notify parent component
+      onClose() // Close modal after successful creation
     } catch (err: any) {
       console.error('Error creating habit:', err.message || err)
       setError('Failed to create habit. Please try again.')

@@ -6,21 +6,15 @@ import { NotFoundError } from '../http-errors'
 import { HabitCreateSchema, HabitUpdateSchema } from '../validations'
 import { ActionResponse, ErrorResponse } from '@/types/global'
 
-async function withTransaction<T>(
-  callback: (session: mongoose.ClientSession) => Promise<T>
-): Promise<T> {
-  const session = await mongoose.startSession()
-  session.startTransaction()
-  try {
-    const result = await callback(session)
-    await session.commitTransaction()
-    return result
-  } catch (error) {
-    await session.abortTransaction()
-    throw error
-  } finally {
-    session.endSession()
-  }
+type HabitParams = {
+  title: string
+  goal: number
+  repeat: 'Daily' | 'Weekly' | 'Monthly'
+  startDate: string
+  location?: string
+  duration: number
+  durationUnit: 'Mins' | 'Hours' | 'Times' | 'Km' | 'M'
+  reminder?: string
 }
 
 export async function createHabit(
@@ -29,21 +23,26 @@ export async function createHabit(
   const validationResult = await action({ params, schema: HabitCreateSchema })
 
   if (validationResult instanceof Error) {
-    console.error('Validation Error:', validationResult)
     return handleError(validationResult) as ErrorResponse
   }
 
-  try {
-    const habitData = validationResult.params
-    const newHabit = await withTransaction(async (session) => {
-      const [createdHabit] = await Habit.create([habitData], { session })
-      return createdHabit
-    })
+  const habitData = validationResult.params as HabitParams
 
-    return { success: true, data: newHabit }
+  const session = await mongoose.startSession()
+  session.startTransaction()
+
+  try {
+    const newHabit = await Habit.create([habitData], { session })
+
+    await session.commitTransaction()
+
+    return { success: true, data: newHabit[0] }
   } catch (error) {
-    console.error('Error during habit creation:', error)
+    await session.abortTransaction()
+
     return handleError(error) as ErrorResponse
+  } finally {
+    session.endSession()
   }
 }
 
@@ -57,45 +56,61 @@ export async function updateHabit(
     return handleError(validationResult) as ErrorResponse
   }
 
-  try {
-    const updatedHabit = await withTransaction(async (session) => {
-      const habit = await Habit.findByIdAndUpdate(
-        habitId,
-        validationResult.params,
-        { new: true, session }
-      )
+  const habitData = validationResult.params as Partial<HabitParams>
 
-      if (!habit) {
-        throw new NotFoundError('Habit')
-      }
-      return habit
+  const session = await mongoose.startSession()
+  session.startTransaction()
+
+  try {
+    const updatedHabit = await Habit.findByIdAndUpdate(habitId, habitData, {
+      new: true,
+      session,
+      runValidators: true
     })
+
+    if (!updatedHabit) {
+      throw new NotFoundError('Habit')
+    }
+
+    await session.commitTransaction()
 
     return { success: true, data: updatedHabit }
   } catch (error) {
+    await session.abortTransaction()
+
     return handleError(error) as ErrorResponse
+  } finally {
+    session.endSession()
   }
 }
 
 export async function deleteHabit(habitId: string): Promise<ActionResponse> {
+  const session = await mongoose.startSession()
+  session.startTransaction()
+
   try {
-    const deletedHabit = await withTransaction(async (session) => {
-      const habit = await Habit.findByIdAndDelete(habitId, { session })
-      if (!habit) {
-        throw new NotFoundError('Habit')
-      }
-      return habit
-    })
+    const deletedHabit = await Habit.findByIdAndDelete(habitId, { session })
+
+    if (!deletedHabit) {
+      throw new NotFoundError('Habit')
+    }
+
+    await session.commitTransaction()
 
     return { success: true, data: deletedHabit }
   } catch (error) {
+    await session.abortTransaction()
+
     return handleError(error) as ErrorResponse
+  } finally {
+    session.endSession()
   }
 }
 
 export async function getHabits(): Promise<ActionResponse<IHabitDoc[]>> {
   try {
     const habits = await Habit.find()
+
     return { success: true, data: habits }
   } catch (error) {
     return handleError(error) as ErrorResponse

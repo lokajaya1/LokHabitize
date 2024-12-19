@@ -1,74 +1,66 @@
 import { NextResponse } from 'next/server'
-
-import User from '@/database/user.model'
-import handleError from '@/lib/handlers/error'
-import { NotFoundError } from '@/lib/http-errors'
+import Habit from '@/database/habit.model'
 import dbConnect from '@/lib/mongoose'
-import { UserSchema } from '@/lib/validations'
+import { NotFoundError } from '@/lib/http-errors'
+import handleError from '@/lib/handlers/error'
+import { HabitUpdateSchema } from '@/lib/validations'
 import { APIErrorResponse } from '@/types/global'
 
-// GET /api/users/[id]
-export async function GET(
-  _: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params
-  if (!id) throw new NotFoundError('User')
+async function findHabitById(id: string) {
+  if (!id) throw new NotFoundError('Habit')
 
+  await dbConnect()
+  const habit = await Habit.findById(id)
+  if (!habit) throw new NotFoundError('Habit')
+  return habit
+}
+
+// GET Habit
+export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
-    await dbConnect()
-
-    const user = await User.findById(id)
-    if (!user) throw new NotFoundError('User')
-
-    return NextResponse.json({ success: true, data: user }, { status: 200 })
+    const habit = await findHabitById(params.id)
+    return NextResponse.json({ success: true, data: habit }, { status: 200 })
   } catch (error) {
     return handleError(error, 'api') as APIErrorResponse
   }
 }
 
-// DELETE /api/users/[id]
+// DELETE Habit
 export async function DELETE(
   _: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params
-  if (!id) throw new NotFoundError('User')
-
   try {
-    await dbConnect()
+    const habit = await Habit.findByIdAndDelete(params.id)
+    if (!habit) throw new NotFoundError('Habit')
 
-    const user = await User.findByIdAndDelete(id)
-    if (!user) throw new NotFoundError('User')
-
-    return NextResponse.json({ success: true, data: user }, { status: 200 })
+    return NextResponse.json({ success: true, data: habit }, { status: 200 })
   } catch (error) {
     return handleError(error, 'api') as APIErrorResponse
   }
 }
 
-// PUT /api/users/[id]
+// UPDATE Habit
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params
-  if (!id) throw new NotFoundError('User')
-
   try {
-    await dbConnect()
-
     const body = await request.json()
-    const validatedData = UserSchema.partial().parse(body)
+    const validatedData = HabitUpdateSchema.parse(body)
 
-    const updatedUser = await User.findByIdAndUpdate(id, validatedData, {
-      new: true
-    })
+    const updatedHabit = await Habit.findByIdAndUpdate(
+      params.id,
+      validatedData,
+      {
+        new: true
+      }
+    )
 
-    if (!updatedUser) throw new NotFoundError('User')
+    if (!updatedHabit) throw new NotFoundError('Habit')
 
     return NextResponse.json(
-      { success: true, data: updatedUser },
+      { success: true, data: updatedHabit },
       { status: 200 }
     )
   } catch (error) {
