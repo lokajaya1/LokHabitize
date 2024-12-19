@@ -93,9 +93,7 @@ export const HabitCreateSchema = z.object({
   }),
   location: z.string().optional(),
   duration: z.number().min(1, { message: 'Duration must be at least 1.' }),
-  durationUnit: z.enum(['Mins', 'Hours'], {
-    message: 'Duration unit must be Mins or Hours.'
-  }),
+  durationUnit: z.enum(['Mins', 'Hours', 'Times', 'Km', 'M']),
   reminder: z
     .string()
     .regex(/^\d{2}:\d{2}$/, {

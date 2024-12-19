@@ -16,6 +16,7 @@ const HabitList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Fetch habits data from API
   useEffect(() => {
     const fetchHabits = async () => {
       try {
@@ -38,6 +39,19 @@ const HabitList: React.FC = () => {
     fetchHabits()
   }, [])
 
+  // Mark habit as completed
+  const handleComplete = (id: string) => {
+    setHabits((prevHabits) =>
+      prevHabits.map((habit) =>
+        habit._id === id ? { ...habit, completed: true } : habit
+      )
+    )
+  }
+
+  // Filter active and completed habits
+  const activeHabits = habits.filter((habit) => !habit.completed)
+  const completedHabits = habits.filter((habit) => habit.completed)
+
   if (loading) {
     return <div className="text-center">Loading habits...</div>
   }
@@ -46,18 +60,15 @@ const HabitList: React.FC = () => {
     return <div className="text-center text-red-500">{error}</div>
   }
 
-  const activeHabits = habits.filter((habit) => !habit.completed)
-  const completedHabits = habits.filter((habit) => habit.completed)
-
   return (
     <div>
-      {/* Habit Items */}
+      {/* Active Habits */}
       <div className="space-y-4 mb-4">
         {activeHabits.map((habit) => (
           <div className="flex items-center justify-between" key={habit._id}>
             <div className="flex items-center space-x-4">
               <div
-                className={`${habit.color} p-3 rounded-lg flex justify-center items-center w-10 h-10`}
+                className={`p-3 rounded-lg flex justify-center items-center w-10 h-10 ${habit.color}`}
               >
                 <i className={`fas ${habit.icon} text-white text-xl`}></i>
               </div>
@@ -75,7 +86,10 @@ const HabitList: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <button className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+              <button
+                className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg"
+                onClick={() => handleComplete(habit._id)}
+              >
                 Done
               </button>
               <div className="w-10 h-10 flex justify-center items-center">
@@ -89,7 +103,7 @@ const HabitList: React.FC = () => {
       {/* Divider */}
       <hr className="border-gray-300" />
 
-      {/* Completed Habit */}
+      {/* Completed Habits */}
       <div className="mt-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">
           Completed Habits
@@ -102,7 +116,7 @@ const HabitList: React.FC = () => {
             >
               <div className="flex items-center space-x-4">
                 <div
-                  className={`${habit.color} p-3 rounded-lg flex justify-center items-center w-10 h-10`}
+                  className={`p-3 rounded-lg flex justify-center items-center w-10 h-10 ${habit.color}`}
                 >
                   <i className={`fas ${habit.icon} text-white text-xl`}></i>
                 </div>

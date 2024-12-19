@@ -7,7 +7,9 @@ import { ValidationError, NotFoundError } from '@/lib/http-errors'
 import handleError from '@/lib/handlers/error'
 import { APIErrorResponse } from '@/types/global'
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request
+): Promise<NextResponse | APIErrorResponse> {
   try {
     await dbConnect()
 
@@ -18,7 +20,7 @@ export async function GET(request: Request) {
       // Jika ID diberikan, cari habit berdasarkan ID
       const habit = await Habit.findById(id)
       if (!habit) {
-        throw new NotFoundError('Habit')
+        throw new NotFoundError('Habit not found')
       }
       return NextResponse.json({ success: true, data: habit }, { status: 200 })
     }
@@ -31,7 +33,9 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(
+  request: Request
+): Promise<NextResponse | APIErrorResponse> {
   try {
     await dbConnect()
 
@@ -51,7 +55,9 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(
+  request: Request
+): Promise<NextResponse | APIErrorResponse> {
   try {
     await dbConnect()
 
@@ -73,7 +79,7 @@ export async function PUT(request: Request) {
     })
 
     if (!updatedHabit) {
-      throw new NotFoundError('Habit')
+      throw new NotFoundError('Habit not found')
     }
 
     return NextResponse.json(
@@ -85,7 +91,9 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(
+  request: Request
+): Promise<NextResponse | APIErrorResponse> {
   try {
     await dbConnect()
 
@@ -99,7 +107,7 @@ export async function DELETE(request: Request) {
     const deletedHabit = await Habit.findByIdAndDelete(id)
 
     if (!deletedHabit) {
-      throw new NotFoundError('Habit')
+      throw new NotFoundError('Habit not found')
     }
 
     return NextResponse.json(

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   useForm,
@@ -23,6 +24,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
 import { ActionResponse } from '@/types/global'
+import { EyeIcon } from 'lucide-react'
+import Image from 'next/image'
 
 interface AuthFormProps<T extends FieldValues> {
   schema: ZodType<T>
@@ -37,6 +40,7 @@ const AuthForm = <T extends FieldValues>({
   formType,
   onSubmit
 }: AuthFormProps<T>) => {
+  const [showPassword, setShowPassword] = useState(false)
   const router = useRouter()
 
   const form = useForm<z.infer<typeof schema>>({
@@ -88,18 +92,44 @@ const AuthForm = <T extends FieldValues>({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      type={field.name === 'password' ? 'password' : 'text'}
-                      placeholder={
-                        field.name === 'email'
-                          ? 'Email address'
-                          : field.name === 'password'
-                            ? 'Password'
-                            : `Enter your ${field.name}`
-                      }
-                      {...field}
-                      className="w-full p-4 rounded-lg bg-gray-100 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
+                    <div className="relative">
+                      <Input
+                        type={
+                          field.name === 'password' && showPassword
+                            ? 'text'
+                            : field.name === 'password'
+                              ? 'password'
+                              : 'text'
+                        }
+                        placeholder={
+                          field.name === 'email'
+                            ? 'Email address'
+                            : field.name === 'password'
+                              ? 'Password'
+                              : `Enter your ${field.name}`
+                        }
+                        {...field}
+                        className="w-full p-4 rounded-lg bg-gray-100 text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                      {field.name === 'password' && (
+                        <span
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-3 flex items-center bg-transparent shadow-none text-gray-500 hover:bg-transparent"
+                        >
+                          {showPassword ? (
+                            <EyeIcon className="w-5 h-5" />
+                          ) : (
+                            <Image
+                              src="/icons/eye-off.svg"
+                              width={20}
+                              height={20}
+                              alt="eye off"
+                              className="w-5 h-5"
+                            />
+                          )}
+                        </span>
+                      )}
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -147,20 +177,6 @@ const AuthForm = <T extends FieldValues>({
           </>
         )}
       </p>
-
-      {formType === 'SIGN_UP' && (
-        <p className="text-gray-600 text-sm text-center mt-6">
-          By clicking {buttonText}, you agree to our{' '}
-          <Link href="#" className="text-blue-600 hover:underline">
-            Terms of Use
-          </Link>{' '}
-          and{' '}
-          <Link href="#" className="text-blue-600 hover:underline">
-            Privacy Policy
-          </Link>
-          .
-        </p>
-      )}
     </div>
   )
 }
