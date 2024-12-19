@@ -11,7 +11,10 @@ import { ActionResponse } from './types/global'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
-    Google,
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET
+    }),
     Credentials({
       async authorize(credentials) {
         const validatedFields = SignInSchema.safeParse(credentials)
@@ -59,7 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         token.sub = user.id as string
       }
@@ -68,6 +71,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       session.user.id = token.sub as string
       return session
+    },
+    async signIn({ user, account, profile }) {
+      if (account?.type === 'credentials') return true
+      if (!account || !user) return false
+
+      // Prepare user information for OAuth
+      const userInfo = {
+        name: user.name!,
+        email: user.email!,
+        image: user.image!,
+        username:
+          account.provider === 'google'
+            ? (user.email?.split('@')[0] as string)
+            : (user.name?.toLowerCase() as string)
+      }
+
+      // Save OAuth user and provider data to database
+      const { success } = (await api.auth.oAuthSignIn({
+        user: userInfo,
+        provider: account.provider as 'google',
+        providerAccountId: account.providerAccountId
+      })) as ActionResponse
+
+      if (!success) return false
+
+      return true
     }
   }
 })

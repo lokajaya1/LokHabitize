@@ -39,6 +39,10 @@ interface Author {
   image?: string // Foto profil opsional
 }
 
+interface User {
+  username: string // Add username to the User object
+}
+
 // ------------------------
 // API Response Types
 // ------------------------
